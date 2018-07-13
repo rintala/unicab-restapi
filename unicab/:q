@@ -1,0 +1,121 @@
+
+#from django.contrib.auth.models import Users
+# Add this line to the beginning of relative.py file
+import sys
+sys.path.append('..')
+from django.http import JsonResponse
+from usermanager.models import Users
+from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework import status
+from django.http import Http404
+#IMPORT YOUR SERIALIZERS
+from .serializers import *
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.list import ListView
+#@csrf_exempt
+from django.utils.decorators import method_decorator
+from rest_framework.decorators import detail_route
+import json
+
+@method_decorator(csrf_exempt, name='dispatch')
+class UserViewSet(viewsets.ModelViewSet):
+	"""
+	A simple Viewset for viewing and editing accounts.
+	"""
+	queryset = Users.objects.all()
+	serializer_class = UserSerializer
+
+#@csrf_exempt
+@method_decorator(csrf_exempt, name='dispatch')
+class TripsViewSet(viewsets.ModelViewSet):
+	queryset = Users.objects.all()
+	serializer_class = UserSerializer
+
+#@csrf_exempt
+@method_decorator(csrf_exempt, name='dispatch')
+class UserInDatabase(viewsets.ModelViewSet):
+	#try:
+	def get_queryset(self):
+		emailIn = self.request.query_params.get('email')
+		queryset=Users.objects.filter(email=emailIn)
+		if queryset.exists():
+			return queryset
+		else:
+			raise Http404
+			#return Response({'message':'False'},404).build();
+			#return JsonResponse(status=status.HTTP_404_NOT_FOUND)
+		#except Users.DoesNotExist:
+		#	raise Http404
+		#return queryset
+		#queryset=request
+		#except Users.DoesNotExist:
+		#queryset=None
+		#if queryset.exists():
+		#	print("YESS")
+		#else:
+		#	print("no")
+	#queryset=queryset[1]
+	#for e in queryset:
+	#	print(e.email)
+	#serializer_class = ''
+	serializer_class = UserSerializer
+	#@csrf_exempt
+	def post(self, request, format=None):
+        	serializer = SnippetSerializer(data=request.data)
+        	if serializer.is_valid():
+            		serializer.save()
+        	    	return Response(serializer.data, status=status.HTTP_201_CREATED)
+	        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	#def get(self, request):
+	#	queryset = Users.object.all()
+	#	user=queryset[1]
+	#	serializer = UserSerializer(user, many=True)
+	#	return Response(serializer.data)
+	#queryset = Users.objects.all()
+	#queryset = ''
+	#def get_queryset(self):
+		#original qs
+		#qs = super().get_queryset()
+        	#filter by a variable captured from url, for example
+        	#return qs.filter(name__startswith=self.kwargs.email)
+
+class DistanceView(viewsets.ModelViewSet):
+	#queryset = Users.objects.filter(is_searching=True)
+	queryset = Users.objects.all()
+	serializer_class = UserSerializer
+	lookup_field = 'email'
+
+	def retrieve(self, request, *args, **kwargs):
+		email = kwargs.get('email', None)
+		#user_id = Users.objects.get(email=email)
+		#self.queryset = Users.objects.filter(email=email)
+		#self.queryset = Users.objects.all()
+		queryset = self.get_queryset()
+		qsTheUserSearching = queryset.get(email=email)
+		initial_latitude = qsTheUserSearching.home_latitude
+		initial_longitude = qsTheUserSearching.home_longitude
+		qsOtherUsersSearching=queryset.filter(is_searching=True)
+		output=[]
+		for otherUser in qsOtherUsersSearching:
+			json_obj = dict(
+            			myproperty = otherUser.home_latitude, 
+        		)
+		output.append(json_obj)
+		#print(otherUser.home_latitude)
+		#serializer = UserSerializer(qsTheUserSearching, many=False)
+		serializer = UserSerializer(qsOtherUsersSearching, many=True)
+		#return super(DistanceView, self).retrieve(request,*args,**kwargs)
+		#return Response(serializer.data)
+		
+		return Response(json.dumps(output))
+		#return Response({'initial_latitude': initial_latitude, 'initial_longitude': initial_longitude})
+
+   # @detail_route()
+    #def date_list(self, request, pk=None):
+     #   user = self.get_object() # retrieve an object by pk provided
+      #  isSearchingUsers = Users.objects.filter(is_searching=True).distinct()
+       # schedule_json = UserSerializer(isSearchingUsers, many=True)
+        #return (Response(schedule_json.data))
+

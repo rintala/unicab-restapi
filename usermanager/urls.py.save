@@ -1,0 +1,4 @@
+urlpatterns = patterns('myapp.views',
+    url(r'^$', 'first_view'),
+    url(r'^evilCellphones/$', 'another_view'),
+)#urls go here
