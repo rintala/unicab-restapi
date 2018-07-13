@@ -7,10 +7,10 @@ RESTful API for the UniCab application, as part of the project course at Strathm
 
 ## API endpoints
 ### Login and signup:
-  - GET: http://206.189.174.133/api/userInDatabase/?email={theEmailOfUser}
+  - GET: http://{ip-address}/api/userInDatabase/?email={theEmailOfUser}
     - Will return error message if user not in DB, which will prompt the user to signup w. Google Account
     - Otherwise a JSON object with the user information will be returned
-  - POST: http://206.189.174.133/api/userInDatabase/
+  - POST: http://{ip-address}/api/userInDatabase/
     - Add new user to DB (signup), the body of the POST request have to provide a unique email address and the following attributes:
         "id", "first_name", "last_name", "email", "date_of_birth", "phone_nr", "faculty", "home_latitude", "home_longitude", "profile_picture", "description"
     - Additional attributes of the database that are set by default are:
@@ -23,7 +23,7 @@ RESTful API for the UniCab application, as part of the project course at Strathm
       phone_verified    | FALSE
 
 ### Searching for nearby users:
-  - GET: http://206.189.174.133/distanceview/{theUserEmail}/
+  - GET: http://{ip-address}/distanceview/{theUserEmail}/
     - Will return the top two passengers for ridesharing based on a simplified <i>Euclidian distance</i> measure
     - The query for choosing the passengers is based on the is_searching flag being TRUE
     - The query orders ASC by distance and the the two top candidates are selected
@@ -38,10 +38,10 @@ RESTful API for the UniCab application, as part of the project course at Strathm
 ## Additional feature
 ### User management: 
   - Overviewing, adding, editing and removing users from the PostGreSQL database via a simple GUI.
-    - Overview users: http://206.189.174.133/admin/usermanager/users/
-    - Add user: http://206.189.174.133/admin/usermanager/users/add/
-    - Edit user: http://206.189.174.133/admin/usermanager/users/{theUserID}/change/
-    - Remove user: http://206.189.174.133/admin/usermanager/users/
+    - Overview users: http://{ip-address}/admin/usermanager/users/
+    - Add user: http://{ip-address}/admin/usermanager/users/add/
+    - Edit user: http://{ip-address}/admin/usermanager/users/{theUserID}/change/
+    - Remove user: http://{ip-address}/admin/usermanager/users/
       - Select user object to be removed from list.
 
 ## Balsamiq Prototype
